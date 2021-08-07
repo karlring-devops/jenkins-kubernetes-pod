@@ -213,101 +213,103 @@ spec:
 EOF
 } > jenkins-service-jnlp.yaml
 
+# /*************************************************/
+# /******* FUNCTIONS NOW IN:  .jprofile ************/
+# /*************************************************/
+
+# kcr8jenkins(){
+#   cd ~/.kube/jenkins
+#   kubectl create -f jenkins-namespace.yaml
+#   kubectl apply -f jenkins-role.yml
+#   kubectl apply -f jenkins-role-bind.yml
+#   kubectl create serviceaccount jenkins-admin-sa -n jenkins
+#   kubectl create clusterrolebinding jenkins-admin-sa --clusterrole=cluster-admin --serviceaccount=jenkins:jenkins-admin-sa -n jenkins
+
+#   kubectl create -f create-pv-jenkins.yaml
+#   kubectl create -f create-pv-claim-jenkins.yaml
+#   kubectl create -f jenkins-deployment.yaml
+#   kubectl create -f jenkins-service.yaml --validate=false
+#   kubectl create -f jenkins-service-jnlp.yaml
+#   kubectl scale -n jenkins deployment jenkins --replicas=1
+# }
+
+# kdeljenkins(){
+#   kubectl delete namespace jenkins
+#   kubectl delete persistentvolume pv-volume-jenkins
+#   kubectl delete persistentvolume pv-volume-jenkins
+#   kubectl delete clusterrolebinding jenkins-admin-sa
+# }
+
+# kdeljenkinsOLD(){
+#   kubectl delete -n jenkins service jenkins-service
+#   kubectl delete -n jenkins service jenkins-jnlp
+#   kubectl delete -n jenkins deployment jenkins-deployment
+#   kubectl delete -n jenkins role jenkins-admin-sa-role
+#   kubectl delete -n jenkins rolebinding jenkin-admin-sa-role-binding
+#   kubectl delete clusterrolebinding jenkins-admin-sa
+#   kubectl delete -n jenkins serviceaccount jenkins-admin-sa
+#   kubectl delete -n jenkins persistentvolumeclaim pv-volume-jenkins
+#   kubectl delete persistentvolume pv-volume-jenkins
+#   kubectl delete namespace jenkins
+# }
+
+# jgetlogin(){
+# MasterIp=$(
+#     sudo kubectl get nodes -o wide | grep master | awk '{ print $6 }'
+#     )
+
+# NodePort=$(
+#     sudo kubectl get services --namespace jenkins \
+#         | grep 'NodePort' \
+#         | awk '{print $5}' \
+#         | sed -e 's|\/|:|g' \
+#         | awk -F':' '{print $2}' 
+#     )
+
+# K8S_SERVICE_NAME=$(
+#                   sudo kubectl get pods -n jenkins \
+#                           | grep jenkins \
+#                           | head -1 \
+#                           | awk '{print $1}'
+#                   )
+# InitialAdminPassword=$(sudo kubectl exec ${K8S_SERVICE_NAME} -n jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword)
+
+# cat <<EOF
+# /**************************************/
+# /** Jenkins Login Details:           **/
+# /--------------------------------------/
+
+# http://${MasterIp}:${NodePort}
+
+# InitialAdminPassword:
+
+# ${InitialAdminPassword}
+
+# EOF
+# }
+
+# main(){
+#   echo -n "Enter action (create/destroy): "
+#   read VAR
+
+#   if [[ $VAR == "create" ]] ; then
+#     kcr8tomcat
+#     kstat
+#   elif [[ $VAR == "destroy" ]] ; then
+#     kdeltomcat
+#     kstat
+#   else
+#     echo '[ERR] Please enter "create" or "destroy"...'
+#   fi
+# }
+
+# main
 
 
-kcr8jenkins(){
-  cd ~/.kube/jenkins
-  kubectl create -f jenkins-namespace.yaml
-  kubectl apply -f jenkins-role.yml
-  kubectl apply -f jenkins-role-bind.yml
-  kubectl create serviceaccount jenkins-admin-sa -n jenkins
-  kubectl create clusterrolebinding jenkins-admin-sa --clusterrole=cluster-admin --serviceaccount=jenkins:jenkins-admin-sa -n jenkins
 
-  kubectl create -f create-pv-jenkins.yaml
-  kubectl create -f create-pv-claim-jenkins.yaml
-  kubectl create -f jenkins-deployment.yaml
-  kubectl create -f jenkins-service.yaml --validate=false
-  kubectl create -f jenkins-service-jnlp.yaml
-  kubectl scale -n jenkins deployment jenkins --replicas=1
-}
+# # /****************************************/
 
-kdeljenkins(){
-  kubectl delete namespace jenkins
-  kubectl delete persistentvolume pv-volume-jenkins
-  kubectl delete persistentvolume pv-volume-jenkins
-  kubectl delete clusterrolebinding jenkins-admin-sa
-}
+# kdelpod(){ kubectl delete pod ${2} -n ${1} --grace-period 0 --force ; }
 
-kdeljenkinsOLD(){
-  kubectl delete -n jenkins service jenkins-service
-  kubectl delete -n jenkins service jenkins-jnlp
-  kubectl delete -n jenkins deployment jenkins-deployment
-  kubectl delete -n jenkins role jenkins-admin-sa-role
-  kubectl delete -n jenkins rolebinding jenkin-admin-sa-role-binding
-  kubectl delete clusterrolebinding jenkins-admin-sa
-  kubectl delete -n jenkins serviceaccount jenkins-admin-sa
-  kubectl delete -n jenkins persistentvolumeclaim pv-volume-jenkins
-  kubectl delete persistentvolume pv-volume-jenkins
-  kubectl delete namespace jenkins
-}
-
-jgetlogin(){
-MasterIp=$(
-    sudo kubectl get nodes -o wide | grep master | awk '{ print $6 }'
-    )
-
-NodePort=$(
-    sudo kubectl get services --namespace jenkins \
-        | grep 'NodePort' \
-        | awk '{print $5}' \
-        | sed -e 's|\/|:|g' \
-        | awk -F':' '{print $2}' 
-    )
-
-K8S_SERVICE_NAME=$(
-                  sudo kubectl get pods -n jenkins \
-                          | grep jenkins \
-                          | head -1 \
-                          | awk '{print $1}'
-                  )
-InitialAdminPassword=$(sudo kubectl exec ${K8S_SERVICE_NAME} -n jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword)
-
-cat <<EOF
-/**************************************/
-/** Jenkins Login Details:           **/
-/--------------------------------------/
-
-http://${MasterIp}:${NodePort}
-
-InitialAdminPassword:
-
-${InitialAdminPassword}
-
-EOF
-}
-
-main(){
-  echo -n "Enter action (create/destroy): "
-  read VAR
-
-  if [[ $VAR == "create" ]] ; then
-    kcr8tomcat
-    kstat
-  elif [[ $VAR == "destroy" ]] ; then
-    kdeltomcat
-    kstat
-  else
-    echo '[ERR] Please enter "create" or "destroy"...'
-  fi
-}
-
-main
-
-
-
-# /****************************************/
-
-kdelpod(){ kubectl delete pod ${2} -n ${1} --grace-period 0 --force ; }
-
-# kdelpod tomcat tomcat-deployment-fb5f96945-79xgp
-# kdelpod tomcat tomcat-deployment-fb5f96945-q79x6
+# # kdelpod tomcat tomcat-deployment-fb5f96945-79xgp
+# # kdelpod tomcat tomcat-deployment-fb5f96945-q79x6
