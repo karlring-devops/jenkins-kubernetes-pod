@@ -321,37 +321,33 @@ kbashcmd(){
 kbashcmd jenkins "mkdir /var/jenkins_home_restore"
 
 kjbackup(){
-  # https://plugins.jenkins.io/backup/
-  ArchiveDir=~/uga/data/backup/jenkins
-  NameSpace=${1} #"jenkins" #${1}
-  #PodName=${2}
-  PodName=$(kubectl get pods -n ${NameSpace} | grep ${NameSpace} | awk '{print $1}')
-  FileName=${2}
-  RemoteDir=/tmp/data/backup/jenkins
+  
+    LOCAL_ARCHIVE_DIR=~/uga/data/backup/jenkins
+       K8S_NAME_SPACE=${1} 
+  JENKINS_BACKUP_FILE=${2}
+         K8S_POD_NAME=$(kubectl get pods -n ${K8S_NAME_SPACE} | grep ${K8S_NAME_SPACE} | awk '{print $1}')
+   JENKINS_REMOTE_DIR=/tmp/data/backup/jenkins
 
-  kubectl cp ${NameSpace}/${PodName}:${RemoteDir}/${FileName} ${ArchiveDir}/${FileName}
-  echo && pwd && echo && ls -alhtr ${ArchiveDir}
+    kubectl cp ${K8S_NAME_SPACE}/${K8S_POD_NAME}:${JENKINS_REMOTE_DIR}/${JENKINS_BACKUP_FILE} ${LOCAL_ARCHIVE_DIR}/${JENKINS_BACKUP_FILE}
+    echo && pwd && echo && ls -alhtr ${LOCAL_ARCHIVE_DIR}
 }
 
 kjbackup jenkins backup_20210805_0830.tar.gz
 
 kjrestore(){
-  # https://plugins.jenkins.io/backup/
-  ArchiveDir=~/uga/data/backup/jenkins
-  NameSpace=${1} #"jenkins" #
-  #PodName=${2}
-  PodName=$(kubectl get pods -n ${NameSpace} | grep ${NameSpace} | awk '{print $1}')
-  FileName=${2}
-  RemoteDir=/tmp/data/backup/jenkins
+ 
+    LOCAL_ARCHIVE_DIR=~/uga/data/backup/jenkins
+       K8S_NAME_SPACE=${1} 
+  JENKINS_BACKUP_FILE=${2}
+         K8S_POD_NAME=$(kubectl get pods -n ${K8S_NAME_SPACE} | grep ${K8S_NAME_SPACE} | awk '{print $1}')
+   JENKINS_REMOTE_DIR=/tmp/data/backup/jenkins
 
-  kubectl cp ${ArchiveDir}/${FileName} ${NameSpace}/${PodName}:${RemoteDir}/${FileName}
-  echo && pwd && echo 
-  kubectl exec -it --namespace=${NameSpace} ${PodName} -- bash -c "ls -alhtr ${RemoteDir}"  
+    kubectl cp ${LOCAL_ARCHIVE_DIR}/${JENKINS_BACKUP_FILE} ${K8S_NAME_SPACE}/${K8S_POD_NAME}:${JENKINS_REMOTE_DIR}/${JENKINS_BACKUP_FILE}
+    echo && pwd && echo 
+    kubectl exec -it --namespace=${K8S_NAME_SPACE} ${K8S_POD_NAME} -- bash -c "ls -alhtr ${JENKINS_REMOTE_DIR}"  
 }
 
 
-
-alias airvpn='sudo /Applications/hummingbird /Volumes/uga/app/airvpn/AirVPN_Singapore_UDP-443.ovpn'
 
 kjrestore jenkins backup_20210801_0329.tar.gz 
 
@@ -520,26 +516,26 @@ java Hello
 
 
 jenv(){
-  JENKINS_URL='http://192.168.7.2:30000'
-  JENKINS_USER=jenkins
-  JENKINS_TOKEN='11bd03efda038e8ab9048c79e63a847138'
-  JENKINS_AUTH="${JENKINS_USER}:${JENKINS_TOKEN}"
+         JENKINS_URL="${1}" #/--- eg. 'http://192.168.7.2:30000'
+        JENKINS_USER=${2}   #/--- eg. jenkins
+       JENKINS_TOKEN=${3}   #/--- eg. asdiasbiou23t43njk34nkj34k3j4h3k4
+        JENKINS_AUTH="${JENKINS_USER}:${JENKINS_TOKEN}"
+   JENKINS_HOME_USER=~/.jenkins
 
-  cd ~/.kube/
-  rm -f jenkins-cli.jar
-  wget http://192.168.7.2:30000/jnlpJars/jenkins-cli.jar
+    [ ! -d ${JENKINS_HOME_USER} ] && mkdir ${JENKINS_HOME_USER}
+    cd ${JENKINS_HOME_USER}
+    [ -f jenkins-cli.jar ] && rm -f jenkins-cli.jar
+    wget "${JENKINS_URL}/jnlpJars/jenkins-cli.jar"
 }
 
-   jhelp(){ java -jar jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_AUTH} help ; }
-jplugins(){ java -jar jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_AUTH} list-plugins ; }
+   jhelp(){ cd ${JENKINS_HOME_USER} ; java -jar jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_AUTH} help ; }
+jplugins(){ cd ${JENKINS_HOME_USER} ; java -jar jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_AUTH} list-plugins ; }
 
 jinstall(){
-            # JENKINS_PLUGIN='https://updates.jenkins-ci.org/download/plugins/gitbucket/0.8/gitbucket.hpi'
-            JENKINS_PLUGIN="${1}"
-            java -jar jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_AUTH} install-plugin ${JENKINS_PLUGIN}
+            JENKINS_PLUGIN="${1}" #/--- eg. 'https://updates.jenkins-ci.org/download/plugins/gitbucket/0.8/gitbucket.hpi'
+            cd ${JENKINS_HOME_USER} ; java -jar jenkins-cli.jar -s ${JENKINS_URL} -auth ${JENKINS_AUTH} install-plugin ${JENKINS_PLUGIN}
           }
 
-jinstall https://updates.jenkins-ci.org/download/plugins/pipeline-stage-view/2.19/pipeline-stage-view.hpi
 
 # /********************************************************/
 
