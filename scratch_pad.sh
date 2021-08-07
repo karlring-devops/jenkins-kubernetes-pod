@@ -222,10 +222,13 @@ EOF
 
 cr8agent(){
 
-wget http://192.168.7.2:30000/jnlpJars/agent.jar
-sudo mkdir -p /home/jenkins/agent
-sudo chmod -R 777 /home/jenkins/agent
-java -jar agent.jar -jnlpUrl http://192.168.7.2:30000/computer/jnlp-21t8p/jenkins-agent.jnlp -secret 20af0b762aca2e1618c75b6411faceb036540354ca97122d754448c0553a4374 -workDir "/home/jenkins/agent" &
+    JENKINS_AGENT_HOME=/home/jenkins/agent
+
+    wget http://192.168.7.2:30000/jnlpJars/agent.jar
+    sudo mkdir -p 
+    sudo chmod -R 777 /home/jenkins/agent
+    cd 
+    java -jar agent.jar -jnlpUrl http://192.168.7.2:30000/computer/jnlp-21t8p/jenkins-agent.jnlp -secret 20af0b762aca2e1618c75b6411faceb036540354ca97122d754448c0553a4374 -workDir "/home/jenkins/agent" &
 
 }
 
@@ -264,37 +267,37 @@ nsenter-node.sh
 set -x
 
 kbashnode(){
-  # //Source: https://alexei-led.github.io/post/k8s_node_shell/
-  node=${1}
-  nodeName=$(kubectl get node ${node} -o template --template='{{index .metadata.labels "kubernetes.io/hostname"}}') 
-  nodeSelector='"nodeSelector": { "kubernetes.io/hostname": "'${nodeName:?}'" },'
-  podName=${USER}-nsenter-${node}
+    # //Source: https://alexei-led.github.io/post/k8s_node_shell/
+    node=${1}
+    nodeName=$(kubectl get node ${node} -o template --template='{{index .metadata.labels "kubernetes.io/hostname"}}') 
+    nodeSelector='"nodeSelector": { "kubernetes.io/hostname": "'${nodeName:?}'" },'
+    podName=${USER}-nsenter-${node}
 
-  kubectl run ${podName:?} --restart=Never -it --rm --image overriden --overrides '
-  {
-    "spec": {
-      "hostPID": true,
-      "hostNetwork": true,
-      '"${nodeSelector?}"'
-      "tolerations": [{
-          "operator": "Exists"
-      }],
-      "containers": [
-        {
-          "name": "nsenter",
-          "image": "alexeiled/nsenter:2.34",
-          "command": [
-            "/nsenter", "--all", "--target=1", "--", "su", "-"
-          ],
-          "stdin": true,
-          "tty": true,
-          "securityContext": {
-            "privileged": true
+    kubectl run ${podName:?} --restart=Never -it --rm --image overriden --overrides '
+    {
+      "spec": {
+        "hostPID": true,
+        "hostNetwork": true,
+        '"${nodeSelector?}"'
+        "tolerations": [{
+            "operator": "Exists"
+        }],
+        "containers": [
+          {
+            "name": "nsenter",
+            "image": "alexeiled/nsenter:2.34",
+            "command": [
+              "/nsenter", "--all", "--target=1", "--", "su", "-"
+            ],
+            "stdin": true,
+            "tty": true,
+            "securityContext": {
+              "privileged": true
+            }
           }
-        }
-      ]
-    }
-  }' --attach "$@"
+        ]
+      }
+    }' --attach "$@"
 }
 
 kbashnode kube2
@@ -347,8 +350,6 @@ kjrestore(){
 }
 
 
-7fhnpi+3543smlmrfd14
-Mt9x{lFPJ@xEap;C
 
 alias airvpn='sudo /Applications/hummingbird /Volumes/uga/app/airvpn/AirVPN_Singapore_UDP-443.ovpn'
 
