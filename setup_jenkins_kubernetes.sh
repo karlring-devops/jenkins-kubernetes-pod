@@ -3,7 +3,8 @@
 # /****************************************/
 # Source : https://www.youtube.com/watch?v=TbhJmDkNwm0
 # Namespace YML: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-organizing-with-namespaces
-# tomcat-namespace.yaml
+
+# jenkins-namespace.yaml
 {
 cat <<EOF
 ---
@@ -153,6 +154,24 @@ EOF
 #           allowPrivilegeEscalation: false
 #           runAsUser: 0
 
+# # >> service.yaml
+# # apiVersion: v1
+# # kind: Service
+# # metadata:
+# #   name: jenkins-service
+# #   namespace: jenkins
+# #   annotations:
+# #       prometheus.io/scrape: 'true'
+# #       prometheus.io/path:   /
+# #       prometheus.io/port:   '8080'
+# # spec:
+# #   selector: 
+# #     app: jenkins-server
+# #   type: NodePort  
+# #   ports:
+# #     - port: 8080
+# #       targetPort: 8080
+# #       nodePort: 32000
 
 # jenkins-service.yaml 
 {
