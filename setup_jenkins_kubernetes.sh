@@ -216,28 +216,29 @@ EOF
 
 
 kcr8jenkins(){
-kubectl create -f jenkins-namespace.yaml
-kubectl apply -f jenkins-role.yml
-kubectl apply -f jenkins-role-bind.yml
-kubectl create serviceaccount jenkins-admin-sa -n jenkins
-kubectl create clusterrolebinding jenkins-admin-sa --clusterrole=cluster-admin --serviceaccount=jenkins:jenkins-admin-sa -n jenkins
+  cd ~/.kube/jenkins
+  kubectl create -f jenkins-namespace.yaml
+  kubectl apply -f jenkins-role.yml
+  kubectl apply -f jenkins-role-bind.yml
+  kubectl create serviceaccount jenkins-admin-sa -n jenkins
+  kubectl create clusterrolebinding jenkins-admin-sa --clusterrole=cluster-admin --serviceaccount=jenkins:jenkins-admin-sa -n jenkins
 
-kubectl create -f create-pv-jenkins.yaml
-kubectl create -f create-pv-claim-jenkins.yaml
-kubectl create -f jenkins-deployment.yaml
-kubectl create -f jenkins-service.yaml --validate=false
-kubectl create -f jenkins-service-jnlp.yaml
-kubectl scale -n jenkins deployment jenkins --replicas=1
+  kubectl create -f create-pv-jenkins.yaml
+  kubectl create -f create-pv-claim-jenkins.yaml
+  kubectl create -f jenkins-deployment.yaml
+  kubectl create -f jenkins-service.yaml --validate=false
+  kubectl create -f jenkins-service-jnlp.yaml
+  kubectl scale -n jenkins deployment jenkins --replicas=1
 }
 
-kdeljenkins2(){
+kdeljenkins(){
   kubectl delete namespace jenkins
   kubectl delete persistentvolume pv-volume-jenkins
   kubectl delete persistentvolume pv-volume-jenkins
   kubectl delete clusterrolebinding jenkins-admin-sa
 }
 
-kdeljenkins(){
+kdeljenkinsOLD(){
   kubectl delete -n jenkins service jenkins-service
   kubectl delete -n jenkins service jenkins-jnlp
   kubectl delete -n jenkins deployment jenkins-deployment
@@ -284,8 +285,6 @@ ${InitialAdminPassword}
 
 EOF
 }
-
-kstat(){ watch kubectl get pods,svc,nodes,rc,rs,pv,pvc --all-namespaces ; }
 
 main(){
   echo -n "Enter action (create/destroy): "
