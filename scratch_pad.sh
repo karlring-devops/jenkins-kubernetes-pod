@@ -257,8 +257,11 @@ K8S_SERVICE_NAME=$(
 kstat(){ watch kubectl get pods,svc,nodes,rc,rs,pv,pvc --all-namespaces ; }
 
 PodName=$(kubectl get pods -n ${NameSpace} | grep ${NameSpace} | awk '{print $1}')
-ContainerID=$(kubectl describe pod jenkins-5c6c476487-5qdvx -n jenkins | egrep 'Container' | grep ID | awk '{print $3}')
-docker exec -it -u root ${ContainerID} /bin/bash
+ContainerID=$(kubectl describe pod ${PodName} -n jenkins | egrep 'Container' | grep ID | awk '{print $3}')
+
+kbashNodeRoot kube1
+K8S_CONTAINER_ID=$(docker container ls | grep jenkins | grep -v pause | awk '{print $1}')
+docker exec -it -u root ${K8S_CONTAINER_ID} /bin/bash
 
 
 nsenter-node.sh
