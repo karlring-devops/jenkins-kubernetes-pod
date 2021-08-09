@@ -26,9 +26,6 @@ spec:
         volumeMounts:
         - name: jenkins-persistent-storage
           mountPath: /var/jenkins_vol
-        securityContext:
-          # allowPrivilegeEscalation: true
-          # runAsUser: 0
       volumes:
       - name: jenkins-persistent-storage
         persistentVolumeClaim:
