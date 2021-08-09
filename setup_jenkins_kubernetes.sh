@@ -17,7 +17,7 @@ metadata:
 EOF
 }  > jenkins-namespace.yaml
 
-#jenkins-role.yml
+#jenkins-role.yaml
 {
 cat <<EOF
 ---
@@ -31,10 +31,10 @@ rules:
   resources: ["*"]
   verbs: ["*"]
 EOF
-} > jenkins-role.yml
+} > jenkins-role.yaml
 
 
-# jenkins-role-bind.yml
+# jenkins-role-bind.yaml
 {
 cat <<EOF
 kind: RoleBinding
@@ -52,7 +52,7 @@ roleRef:
   name: jenkins-admin-sa-role
   apiGroup: ""  
 EOF
-} > jenkins-role-bind.yml
+} > jenkins-role-bind.yaml
 
 {
 cat <<EOF
@@ -127,6 +127,9 @@ spec:
         volumeMounts:
         - name: jenkins-persistent-storage
           mountPath: /var/jenkins_vol
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 0
       volumes:
       - name: jenkins-persistent-storage
         persistentVolumeClaim:
@@ -220,8 +223,8 @@ EOF
 # kcr8jenkins(){
 #   cd ~/.kube/jenkins
 #   kubectl create -f jenkins-namespace.yaml
-#   kubectl apply -f jenkins-role.yml
-#   kubectl apply -f jenkins-role-bind.yml
+#   kubectl apply -f jenkins-role.yaml
+#   kubectl apply -f jenkins-role-bind.yaml
 #   kubectl create serviceaccount jenkins-admin-sa -n jenkins
 #   kubectl create clusterrolebinding jenkins-admin-sa --clusterrole=cluster-admin --serviceaccount=jenkins:jenkins-admin-sa -n jenkins
 
