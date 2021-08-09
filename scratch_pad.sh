@@ -1,5 +1,61 @@
 #!/bin/bash
 
+# /********************************************************/
+# JENKINS: jnlp-slave agent kubernetes
+# /********************************************************/
+
+# Source: https://www.youtube.com/watch?v=-saC-Y7Zwqc
+# Other : https://hub.docker.com/r/jenkins/jnlp-slave/
+# Name  : Create Your First CI/CD Pipeline on Kubernetes With Jenkins
+
+JENKINS: Manage Jenkins -> Configure Clouds
+
+kubernetes Name: kubernetes
+kubernetes Namespace: kubernetes
+Credentials: none  (test connection)
+Jenkins Tunnel:  
+      kubectl get svc jenkins-jnlp -n jenkins | awk '{print $3":"$5}' | sed -e 's|/TCP||g'
+      CLUSTER-IP:PORT(S)
+      10.111.250.180:50000
+
+Create Pod/template with below from YAML:
+
+jenkins-pod           : "slave"
+jenkins/label         : "jnlp-slave"
+JENKINS_TUNNEL        : "xxx.xxx.xxx.xxx:50000" (kubectl get svc -n jenkins ClusterIP)
+JENKINS_AGENT_WORKDIR : "/home/jenkins/agent"
+JENKINS_URL           : "http://xxx.xxx.xxx.xxx:30000/"
+image                 : "jenkins/jnlp-slave"
+imagePullPolicy       : "Always"
+name                  : "jnlp"
+tty                   : true
+workingDir            : "/home/jenkins/agent"
+hostNetwork           : false
+
+
+# /********************************************************/
+GIT JENKINS INTEGRATION - CREATE BUILD - HELLOWORLD
+# /********************************************************/
+# source: https://www.youtube.com/watch?v=bGqS0f4Utn4
+# name  : Jenkins Beginner Tutorial 8 - Jenkins integration with GIT (SCM)
+
+New Item : Freesytle Project
+
+Source Code Management  : Git
+Repository URL          : https://github.com/karlring-devops/HelloWorld.git
+Credentials             : Add -> Jenkins 
+Username                : git.user.name
+Password                : git.user.password
+Credentials             : git.user.name/******
+Branch Specifier (blank for 'any') : **
+Build (Execute Shell)   : 
+
+cd /var/jenkins_home/workspace/HelloWorld
+javac Hello.java
+java Hello
+
+
+
 
 # /*********************************************************************/
 # --- DEPLOY JENKINS                                                 ---/
@@ -492,9 +548,9 @@ New Item : Freesytle Project
 Source Code Management  : Git
 Repository URL          : https://github.com/karlring-devops/HelloWorld.git
 Credentials             : Add -> Jenkins 
-Username                : karlring-devops
-Password                : RW01
-Credentials             : karlring-devops/******
+Username                : 
+Password                : 
+Credentials             : /******
 Branch Specifier (blank for 'any') : **
 Build (Execute Shell)   : 
 
